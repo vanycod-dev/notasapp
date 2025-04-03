@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
+import { sendRegistrationData } from "../utils/Registro";
 
 function Registro() {
     // Estado para almacenar los datos del formulario
     // y para manejar errores
     const [formData, setFormData] = useState({
-        nombre: '',
-        correo: '',
-        contraseña: '',
-        confirmarContraseña: ''
+        username: '',
+        email: '',
+        password: '',
+        confipassword: ''
     });
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const DOMINIOS_VALIDOS = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'];
 
@@ -21,7 +22,7 @@ function Registro() {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'correo' ? value.trim() : value
+            [name]: name === 'email' ? value.trim() : value
         }));
     };
 
@@ -36,16 +37,16 @@ function Registro() {
             return;
         }
 
-        if (formData.contraseña !== formData.confirmarContraseña) {
+        if (formData.password !== formData.confipassword) {
             setError('Las contraseñas no coinciden');
             return;
         }
 
-        if (formData.contraseña.length < 6) {
+        if (formData.password.length < 6) {
             setError('La contraseña debe tener al menos 6 caracteres');
             return;
         }
-        if (!DOMINIOS_VALIDOS.includes(formData.correo.split('@')[1])) {
+        if (!DOMINIOS_VALIDOS.includes(formData.email.split('@')[1])) {
             setError('Dominio de correo no válido: debe ser uno de los siguientes: ' + DOMINIOS_VALIDOS.join(', '));
             return;
         }
@@ -54,19 +55,20 @@ function Registro() {
 
         // Envío de datos
         console.log('Datos de registro:', {
-            nombre: formData.nombre,
-            correo: formData.correo,
-            contraseña: formData.contraseña
+            nombre: formData.username,
+            correo: formData.email,
+            contraseña: formData.password
         });
+        sendRegistrationData(formData);
 
-        alert(`¡Gracias por registrarte, ${formData.nombre}!`);
+        alert(`¡Gracias por registrarte, ${formData.username}!`);
         setFormData({
-            nombre: '',
-            correo: '',
-            contraseña: '',
-            confirmarContraseña: ''
+            username: '',
+            email: '',
+            password: '',
+            confipassword: ''
         });
-        navigate('/info');
+        // navigate('/info');
     };
 
     return ( 
@@ -83,30 +85,30 @@ function Registro() {
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    name="nombre"
+                    name="username"
                     placeholder="Usuario ejemplo: usuario123"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    value={formData.nombre}
+                    value={formData.username}
                     onChange={handleChange}
                     required
                 />
                 
                 <input
                     type="email"
-                    name="correo"
+                    name="email"
                     placeholder="Correo ejemplo: ejemplo@gmail.com"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    value={formData.correo}
+                    value={formData.email}
                     onChange={handleChange}
                     required
                 />
                 
                 <input
                     type="password"
-                    name="contraseña"
+                    name="password"
                     placeholder="Contraseña"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    value={formData.contraseña}
+                    value={formData.password}
                     onChange={handleChange}
                     required
                     minLength={6}
@@ -114,10 +116,10 @@ function Registro() {
                 
                 <input
                     type="password"
-                    name="confirmarContraseña"
+                    name="confipassword"
                     placeholder="Confirmar contraseña"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    value={formData.confirmarContraseña}
+                    value={formData.confipassword}
                     onChange={handleChange}
                     required
                 />
