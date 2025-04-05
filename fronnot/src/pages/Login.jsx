@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { sendLoginData } from "../utils/Login";
 import { useNavigate } from "react-router";
 
 const DOMINIOS_VALIDOS = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'];
@@ -7,8 +8,8 @@ function Login() {
     // Estado para almacenar los datos del formulario
     // y para manejar errores
     const [formData, setFormData] = useState({
-        correo: '',
-        contraseña: ''
+        username: '',
+        password: ''
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Login() {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'correo' ? value.trim() : value
+            [name]: name === 'username' ? value.trim() : value
         }));
     };
 
@@ -34,24 +35,24 @@ function Login() {
         e.preventDefault();
         
         // Validaciones
-        if (!formData.correo || !formData.contraseña) {
+        if (!formData.username || !formData.password) {
             setError('Todos los campos son requeridos');
             return;
         }
 
-        const dominio = formData.correo.split('@')[1];
-        if (!DOMINIOS_VALIDOS.includes(dominio)) {
-            setError('Dominio de correo no válido');
-            return;
-        }
-
-        if (formData.contraseña.length < 6) {
+        
+        if (formData.password.length < 6) {
             setError('La contraseña debe tener al menos 6 caracteres');
             return;
         }
 
         // Si pasa las validaciones
         console.log('Datos enviados:', formData);
+        sendLoginData(formData);
+        setFormData({
+            username: '',
+            password: ''
+        });
         navigate('/info');
     };
 
@@ -68,21 +69,21 @@ function Login() {
 
             <form onSubmit={handleSubmit}>
                 <input 
-                    type="email" 
-                    name="correo"
+                    type="text" 
+                    name="username"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    placeholder="Email" 
-                    value={formData.correo}
+                    placeholder="Ingresa tu usuario" 
+                    value={formData.username}
                     onChange={handleChange}
                     required 
                 />
                 
                 <input 
                     type="password" 
-                    name="contraseña"
+                    name="password"
                     className="w-full my-2 p-2 border rounded-md focus:outline-none"
-                    placeholder="Contraseña" 
-                    value={formData.contraseña}
+                    placeholder="Ingresa tu contraseña" 
+                    value={formData.password}
                     onChange={handleChange}
                     required 
                     minLength={6}

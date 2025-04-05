@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { crearNotaPublica } from "../utils/CrearNota";
+// import { useNavigate } from "react-router";
 
 function Notas() {
     const [formData, setFormData] = useState({
@@ -7,14 +8,19 @@ function Notas() {
         contenido: '',
         publico: 'public'
     });
+    // eslint-disable-next-line no-unused-vars
     const [autenticado, setAutenticado] = useState(false);
     const editorRef = useRef(null);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("🔍 Verificando autenticación...");
-        const token = true; // Simulamos usuario autenticado
-        setAutenticado(!!token);
+        const token = localStorage.getItem('token');
+        if (token) {
+            setAutenticado(true);
+        } else {
+            setAutenticado(false);
+        }
+        // Limpiar el contenido del editor al cargar el componente
     }, []);
 
     const enviarNota = async () => {
@@ -26,16 +32,19 @@ function Notas() {
             return;
         }
 
-        const notaNueva = {
-            ...formData,
-            contenido: contenidoActual,
-            fecha: new Date().toISOString()
-        };
-
         try {
-            console.log("Nota creada:", notaNueva);
+            const notaNueva = {
+                titulo: formData.titulo,
+                contenido: contenidoActual,
+                publico: formData.publico,
+                usuario: autenticado ? localStorage.getItem('username') : 'anonimo'
+            };
+            console.log("Nota a enviar:", notaNueva);
+            if(formData.publico === 'public') {
+                crearNotaPublica(notaNueva);
+            }
             // await crearNota(notaNueva); // Descomenta cuando tengas la función
-            navigate('/list');
+            // navigate('/list');
         } catch (error) {
             console.error("Error:", error);
             alert('Error al crear la nota');
@@ -68,36 +77,6 @@ function Notas() {
                 break;
         }
     };
-
-    // Versión alternativa más moderna (recomendada)
-    // const aplicarEstiloModerno = (estilo) => {
-    //     if (!editorRef.current) return;
-
-    //     const selection = window.getSelection();
-    //     if (!selection.rangeCount) return;
-
-    //     const range = selection.getRangeAt(0);
-    //     const span = document.createElement('span');
-        
-    //     switch(estilo) {
-    //         case 'bold':
-    //             span.style.fontWeight = 'bold';
-    //             break;
-    //         case 'italic':
-    //             span.style.fontStyle = 'italic';
-    //             break;
-    //         case 'A+':
-    //             span.style.fontSize = '1.2em';
-    //             break;
-    //         case 'A-':
-    //             span.style.fontSize = '0.8em';
-    //             break;
-    //     }
-
-    //     range.surroundContents(span);
-    //     selection.removeAllRanges();
-    //     selection.addRange(range);
-    // };
 
     return (
         <div className="max-w-2xl bg-gray-200 mx-auto my-2.5 p-2 border rounded-lg shadow-2xl">

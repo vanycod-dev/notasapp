@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { sendRegistrationData } from "../utils/Registro";
 
 function Registro() {
@@ -12,7 +12,7 @@ function Registro() {
         confipassword: ''
     });
     const [error, setError] = useState('');
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const DOMINIOS_VALIDOS = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'];
 
@@ -68,7 +68,7 @@ function Registro() {
             password: '',
             confipassword: ''
         });
-        // navigate('/info');
+        navigate('/login');
     };
 
     return ( 

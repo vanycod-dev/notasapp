@@ -5,6 +5,7 @@ import Info from './componentes/Info.jsx';
 import Login from './pages/Login.jsx';
 import Registro from './pages/Registro.jsx';
 import Notas from './componentes/Notas.jsx';
+import Lista from './componentes/Lista.jsx';
 
 function App() {
 
@@ -15,7 +16,7 @@ function App() {
           <Route index element={<Info/>} />
           <Route path="/login" element={ <Login /> } />
           <Route path="/registro" element={<Registro />} />
-          {/* <Route path="/list" element={<Lista />} /> */}
+          <Route path="/lista" element={<Lista />} />
           {/* <Route path="note/:id" element={<Modal> <Notas></Notas> </Modal>} /> */}
           <Route path="/notas" element={<Notas/>} />
           <Route path="/info" element={<Info/>} />
