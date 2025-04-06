@@ -1,20 +1,40 @@
 import { useEffect, useRef, useState } from "react";
-import { actualizarNotaPublica } from "../utils/CrearNota"; // Crea esta función para tu lógica de update
+import { actualizarNotaPublica, obtenerNotasPublicas } from "../utils/CrearNota";
 
-function EditarNota({ nota, onActualizada }) {
+function EditarNota({ id, onActualizada }) {
+    const editorRef = useRef(null);
+    const [nota, setNota] = useState(null);
+
     const [formData, setFormData] = useState({
-        titulo: nota.titulo || '',
-        contenido: nota.contenido || '',
-        publico: nota.publico || 'public'
+        titulo: '',
+        contenido: '',
+        publico: 'public'
     });
 
-    const editorRef = useRef(null);
+    useEffect(() => {
+        const cargarNota = async () => {
+            const todas = await obtenerNotasPublicas();
+            const encontrada = todas.find((n) => n.id === id);
+            setNota(encontrada);
+            if (encontrada) {
+                setFormData({
+                    titulo: encontrada.titulo,
+                    contenido: encontrada.contenido,
+                    publico: encontrada.publico
+                });
+            }
+        };
+
+        cargarNota();
+    }, [id]);
 
     useEffect(() => {
-        if (editorRef.current) {
+        if (editorRef.current && formData.contenido) {
             editorRef.current.innerHTML = formData.contenido;
         }
     }, [formData.contenido]);
+
+    if (!nota) return null;
 
     const enviarEdicion = async () => {
         if (!editorRef.current) return;
@@ -32,8 +52,8 @@ function EditarNota({ nota, onActualizada }) {
                 contenido: contenidoActual,
                 publico: formData.publico
             };
-            await actualizarNotaPublica(notaActualizada); // Lógica de update en backend
-            onActualizada(); // Callback para refrescar la lista o salir del modo edición
+            await actualizarNotaPublica(notaActualizada);
+            onActualizada();
         } catch (error) {
             console.error("Error al editar:", error);
             alert('Error al editar la nota');
@@ -47,31 +67,27 @@ function EditarNota({ nota, onActualizada }) {
     };
 
     return (
-        <div className="max-w-2xl bg-yellow-50 mx-auto my-2.5 p-2 border rounded-lg shadow-xl">
-            <h2 className="font-bold mb-2">Editar Nota</h2>
+        <div className="max-w-2xl bg-yellow-50 mx-auto my-4 p-4 border rounded-lg shadow-xl">
+            <h2 className="font-bold mb-3">Editar Nota</h2>
 
-            <div className="mb-2">
-                <input
-                    type="text"
-                    value={formData.titulo}
-                    className="w-full p-2 border rounded"
-                    onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                    placeholder="Título"
-                />
-            </div>
+            <input
+                type="text"
+                value={formData.titulo}
+                onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                className="w-full p-2 border rounded mb-2"
+                placeholder="Título"
+            />
 
-            <div className="mb-2">
-                <select
-                    value={formData.publico}
-                    onChange={(e) => setFormData({ ...formData, publico: e.target.value })}
-                    className="border p-2 rounded"
-                >
-                    <option value="public">Público</option>
-                    <option value="priv">Privado</option>
-                </select>
-            </div>
+            <select
+                value={formData.publico}
+                onChange={(e) => setFormData({ ...formData, publico: e.target.value })}
+                className="w-full p-2 border rounded mb-2"
+            >
+                <option value="public">Público</option>
+                <option value="priv">Privado</option>
+            </select>
 
-            <div className="flex space-x-2 mb-2">
+            <div className="flex gap-2 mb-2">
                 {['bold', 'italic'].map((cmd) => (
                     <button
                         key={cmd}
@@ -86,7 +102,7 @@ function EditarNota({ nota, onActualizada }) {
             <div
                 contentEditable
                 ref={editorRef}
-                className="min-h-[200px] max-h-[300px] overflow-y-auto bg-white border p-2 rounded mb-2"
+                className="min-h-[200px] max-h-[300px] overflow-y-auto bg-white border p-2 rounded mb-4"
             />
 
             <button

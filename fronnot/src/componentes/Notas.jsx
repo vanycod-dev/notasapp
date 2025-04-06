@@ -8,7 +8,6 @@ function Notas() {
         contenido: '',
         publico: 'public'
     });
-    // eslint-disable-next-line no-unused-vars
     const [autenticado, setAutenticado] = useState(false);
     const editorRef = useRef(null);
     // const navigate = useNavigate();

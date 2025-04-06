@@ -4,6 +4,7 @@ import EditarNota from "./EditarNota";
 
 function Lista() {
     const [notasPublicas, setNotasPublicas] = useState([]);
+    const [editandoId, setEditandoId] = useState(null);
 
     useEffect(() => {
         const fetchNotas = async () => {
@@ -24,8 +25,7 @@ function Lista() {
 
     const handleEditar = (id) => {
         console.log("Editar nota con id:", id);
-        EditarNota({ id });
-        // Aquí podrías redirigir a un formulario con los datos para editar
+        setEditandoId(id);
     };
 
     return (
@@ -68,6 +68,16 @@ function Lista() {
                     <p className="text-center col-span-full text-gray-500">No hay notas públicas disponibles.</p>
                 )}
             </div>
+
+            {editandoId && (
+                <EditarNota
+                    id={editandoId}
+                    onActualizada={() => {
+                        setEditandoId(null);
+                        obtenerNotasPublicas().then(setNotasPublicas);
+                    }}
+                />
+            )}
         </div>
     );
 }
