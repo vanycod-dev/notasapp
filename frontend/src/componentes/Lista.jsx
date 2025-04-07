@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { obtenerNotasPublicas } from "../utils/CrearNota";
+import { eliminarNotaPublica, obtenerNotasPublicas } from "../utils/CrearNota";
 import EditarNota from "./EditarNota";
 
 function Lista() {
@@ -25,6 +25,8 @@ function Lista() {
 
   const handleEliminar = (id) => {
     console.log("Eliminar nota con id:", id);
+    eliminarNotaPublica(id); // Aquí se llamaría a la función de eliminación real
+    recargarNotas(); // Recargar las notas después de eliminar
     // Lógica real de eliminación iría aquí
   };
 

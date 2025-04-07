@@ -18,6 +18,10 @@ export const crearNotaPublica = (nota) => {
     console.log("Nota guardada en localStorage:", nuevaNota);
     // Aquí puedes agregar la lógica para enviar la nota a tu API o backend
 };
+export const crearNotaPrivada = (nota) => {
+    // Aquí puedes agregar la lógica para crear una nota privada
+    console.log("Nota privada creada:", nota);
+};
 export const eliminarNotaPublica = (id) => {
     const notasPublicas = obtenerNotasPublicas();
     const nuevasNotas = notasPublicas.filter(nota => nota.id !== id);

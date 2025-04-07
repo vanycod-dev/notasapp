@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { crearNotaPublica } from "../utils/CrearNota";
+import { crearNotaPrivada, crearNotaPublica } from "../utils/CrearNota";
 // import { useNavigate } from "react-router";
 
 function Notas() {
@@ -36,14 +36,16 @@ function Notas() {
                 titulo: formData.titulo,
                 contenido: contenidoActual,
                 publico: formData.publico,
-                usuario: autenticado ? localStorage.getItem('username') : 'anonimo'
+                usuario: autenticado ? localStorage.getItem('user') : 'anonimo'
             };
             console.log("Nota a enviar:", notaNueva);
             if(formData.publico === 'public') {
                 crearNotaPublica(notaNueva);
+            } else if(formData.publico === 'priv') {
+                // Aquí puedes agregar la lógica para crear una nota privada
+                await crearNotaPrivada(notaNueva); // Descomenta cuando tengas la función
             }
-            // await crearNota(notaNueva); // Descomenta cuando tengas la función
-            // navigate('/list');
+            // navigate('/lista');
         } catch (error) {
             console.error("Error:", error);
             alert('Error al crear la nota');
