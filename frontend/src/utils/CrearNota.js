@@ -1,4 +1,6 @@
+import API from "./axiosConfig";
 const NOTAS_PUBLICAS = 'notasPublicas';
+
 
 export const obtenerNotasPublicas = () => {
     const notasPublicas = JSON.parse(localStorage.getItem(NOTAS_PUBLICAS)) || [];
@@ -18,9 +20,29 @@ export const crearNotaPublica = (nota) => {
     console.log("Nota guardada en localStorage:", nuevaNota);
     // Aquí puedes agregar la lógica para enviar la nota a tu API o backend
 };
-export const crearNotaPrivada = (nota) => {
-    // Aquí puedes agregar la lógica para crear una nota privada
-    console.log("Nota privada creada:", nota);
+export const crearNotaPrivada = async (nota) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) throw new Error('Usuario no autenticado');
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    };
+
+    try {
+        const res = await API.post('/notes', {
+            title: nota.titulo,
+            content: nota.contenido
+        }, config);
+
+        console.log('Nota privada creada en backend:', res.data);
+        return res.data;
+    } catch (err) {
+        console.error('Error al crear nota privada:', err);
+        throw err;
+    }
 };
 export const eliminarNotaPublica = (id) => {
     const notasPublicas = obtenerNotasPublicas();
