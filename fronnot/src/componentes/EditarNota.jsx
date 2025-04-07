@@ -1,121 +1,130 @@
 import { useEffect, useRef, useState } from "react";
 import { actualizarNotaPublica, obtenerNotasPublicas } from "../utils/CrearNota";
 
-function EditarNota({ id, onCerrar, onActualizada }) {
-    const editorRef = useRef(null);
-    const [nota, setNota] = useState(null);
-    const [formData, setFormData] = useState({ titulo: "", contenido: "" });
-    const [cargando, setCargando] = useState(false);
+function EditarNota({ id, onActualizada, onCerrar }) {
+  const editorRef = useRef(null);
+  const [nota, setNota] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    titulo: '',
+    contenido: ''
+  });
 
-    useEffect(() => {
-        const cargarNota = async () => {
-            const todas = await obtenerNotasPublicas();
-            const encontrada = todas.find((n) => n.id === id);
-            setNota(encontrada);
-            if (encontrada) {
-                setFormData({
-                    titulo: encontrada.titulo,
-                    contenido: encontrada.contenido
-                });
-            }
-        };
-        cargarNota();
-    }, [id]);
-
-    useEffect(() => {
-        if (editorRef.current && formData.contenido) {
-            editorRef.current.innerHTML = formData.contenido;
-        }
-    }, [formData.contenido]);
-
-    const enviarEdicion = async () => {
-        if (!editorRef.current) return;
-        const contenidoActual = editorRef.current.innerHTML;
-
-        if (!formData.titulo || !contenidoActual.trim()) {
-            alert("Completa todos los campos");
-            return;
-        }
-
-        try {
-            setCargando(true);
-            const notaActualizada = {
-                ...nota,
-                titulo: formData.titulo,
-                contenido: contenidoActual,
-            };
-            await actualizarNotaPublica(notaActualizada);
-            onActualizada();
-        } catch (error) {
-            console.error("Error al editar:", error);
-            alert("Error al editar la nota");
-        } finally {
-            setCargando(false);
-        }
+  useEffect(() => {
+    const cargarNota = async () => {
+      const todas = await obtenerNotasPublicas();
+      const encontrada = todas.find((n) => n.id === id);
+      setNota(encontrada);
+      if (encontrada) {
+        setFormData({
+          titulo: encontrada.titulo,
+          contenido: encontrada.contenido
+        });
+      }
     };
+    cargarNota();
+  }, [id]);
 
-    const aplicarEstilo = (comando) => {
-        editorRef.current.focus();
-        if (!window.getSelection().toString()) return;
-        document.execCommand(comando, false, null);
-    };
+  useEffect(() => {
+    if (editorRef.current && formData.contenido) {
+      editorRef.current.innerHTML = formData.contenido;
+    }
+  }, [formData.contenido]);
 
-    if (!nota) return null;
+  if (!nota) return null;
 
-    return (
-        <div className="fixed inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white max-w-xl w-full rounded-xl p-6 shadow-lg relative animate-fadeIn">
-                <button
-                    onClick={onCerrar}
-                    className="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-xl"
-                >
-                    ✖
-                </button>
+  const enviarEdicion = async () => {
+    if (!editorRef.current) return;
+    const contenidoActual = editorRef.current.innerHTML.trim();
 
-                <h2 className="text-lg font-bold mb-3">Editar Nota</h2>
+    if (!formData.titulo.trim() || !contenidoActual || contenidoActual === "<br>") {
+      alert('Completa todos los campos');
+      return;
+    }
 
-                <input
-                    type="text"
-                    value={formData.titulo}
-                    onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                    className="w-full p-2 border rounded mb-2"
-                    placeholder="Título"
-                />
+    try {
+      setLoading(true);
+      const notaActualizada = {
+        ...nota,
+        titulo: formData.titulo,
+        contenido: contenidoActual,
+      };
+      await actualizarNotaPublica(notaActualizada);
+      onActualizada();
+    } catch (error) {
+      console.error("Error al editar:", error);
+      alert('Error al editar la nota');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <div className="flex gap-2 mb-2">
-                    {["bold", "italic"].map((cmd) => (
-                        <button
-                            key={cmd}
-                            className="border px-2 py-1 rounded hover:bg-gray-200"
-                            onClick={() => aplicarEstilo(cmd)}
-                        >
-                            {cmd === "bold" ? "B" : "I"}
-                        </button>
-                    ))}
-                </div>
+  const aplicarEstilo = (comando) => {
+    editorRef.current.focus();
+    if (!window.getSelection().toString()) return;
+    document.execCommand(comando, false, null);
+  };
 
-                <div
-                    contentEditable
-                    ref={editorRef}
-                    className="min-h-[200px] max-h-[300px] overflow-y-auto bg-white border p-2 rounded mb-4"
-                />
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
+      <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md animate-[fadeInUp_0.3s_ease-out_forwards]">
+        <h2 className="font-bold mb-4 text-xl text-center text-gray-800">Editar Nota</h2>
 
-                <div className="flex justify-end gap-2">
-                    <button
-                        onClick={enviarEdicion}
-                        disabled={cargando}
-                        className={`px-4 py-2 font-bold rounded ${
-                            cargando
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-green-500 hover:bg-green-600 text-white"
-                        }`}
-                    >
-                        {cargando ? "Guardando..." : "Guardar Cambios"}
-                    </button>
-                </div>
-            </div>
+        <input
+          type="text"
+          value={formData.titulo}
+          onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+          className="w-full p-2 border rounded mb-3"
+          placeholder="Título"
+        />
+
+        <div className="flex gap-2 mb-2">
+          {['bold', 'italic'].map((cmd) => (
+            <button
+              key={cmd}
+              className="border px-2 py-1 rounded hover:bg-gray-200 text-sm font-medium"
+              onClick={() => aplicarEstilo(cmd)}
+            >
+              {cmd === 'bold' ? 'B' : 'I'}
+            </button>
+          ))}
         </div>
-    );
+
+        <div
+          contentEditable
+          ref={editorRef}
+          className="min-h-[150px] max-h-[300px] overflow-y-auto bg-gray-50 border p-2 rounded mb-4"
+        />
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onCerrar}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded"
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={enviarEdicion}
+            disabled={loading}
+            className={`${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            } bg-green-500 text-white font-bold px-4 py-2 rounded`}
+          >
+            {loading ? "Guardando..." : "Guardar Cambios"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default EditarNota;
