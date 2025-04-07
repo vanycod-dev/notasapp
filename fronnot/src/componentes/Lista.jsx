@@ -6,27 +6,17 @@ function Lista() {
     const [notasPublicas, setNotasPublicas] = useState([]);
     const [editandoId, setEditandoId] = useState(null);
 
+    const fetchNotas = async () => {
+        const notas = await obtenerNotasPublicas();
+        setNotasPublicas(notas);
+    };
+
     useEffect(() => {
-        const fetchNotas = async () => {
-            try {
-                const notas = await obtenerNotasPublicas();
-                setNotasPublicas(notas);
-            } catch (error) {
-                console.error("Error al obtener notas públicas:", error);
-            }
-        };
         fetchNotas();
     }, []);
 
-    const handleEliminar = (id) => {
-        console.log("Eliminar nota con id:", id);
-        // Aquí va la lógica real de eliminación (ej. llamada al backend)
-    };
-
-    const handleEditar = (id) => {
-        console.log("Editar nota con id:", id);
-        setEditandoId(id);
-    };
+    const handleEditar = (id) => setEditandoId(id);
+    const handleCerrarModal = () => setEditandoId(null);
 
     return (
         <div className="max-w-6xl mx-auto p-4 mt-6">
@@ -47,7 +37,6 @@ function Lista() {
                                     <p>👤 {nota.usuario}</p>
                                 </div>
                             </div>
-
                             <div className="mt-4 flex justify-between gap-2">
                                 <button
                                     onClick={() => handleEditar(nota.id)}
@@ -56,7 +45,7 @@ function Lista() {
                                     ✏️ Editar
                                 </button>
                                 <button
-                                    onClick={() => handleEliminar(nota.id)}
+                                    onClick={() => console.log("Eliminar nota con id:", nota.id)}
                                     className="flex-1 bg-red-500/50 hover:bg-red-600 text-white py-1 px-0.5 rounded-lg transition text-xs"
                                 >
                                     🗑️ Eliminar
@@ -72,9 +61,10 @@ function Lista() {
             {editandoId && (
                 <EditarNota
                     id={editandoId}
-                    onActualizada={() => {
-                        setEditandoId(null);
-                        obtenerNotasPublicas().then(setNotasPublicas);
+                    onCerrar={handleCerrarModal}
+                    onActualizada={async () => {
+                        await fetchNotas();
+                        handleCerrarModal();
                     }}
                 />
             )}
