@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { actualizarNotaPublica, obtenerNotasPublicas } from "../utils/CrearNota";
+import { actualizarNotaPublica, actualizarNotaPrivada, obtenerNotasPublicas } from "../utils/CrearNota";
 
-function EditarNota({ id, onActualizada, onCerrar }) {
+function EditarNota({ id, onCerrar }) {
   const editorRef = useRef(null);
   const [nota, setNota] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -49,8 +49,11 @@ function EditarNota({ id, onActualizada, onCerrar }) {
         titulo: formData.titulo,
         contenido: contenidoActual,
       };
-      await actualizarNotaPublica(notaActualizada);
-      onActualizada();
+      if (nota.esPrivada) {
+        await actualizarNotaPrivada(notaActualizada);
+      } else {
+        await actualizarNotaPublica(notaActualizada);
+      }      
     } catch (error) {
       console.error("Error al editar:", error);
       alert('Error al editar la nota');

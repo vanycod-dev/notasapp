@@ -44,6 +44,45 @@ export const crearNotaPrivada = async (nota) => {
         throw err;
     }
 };
+export const obtenerNotasPrivadas = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Usuario no autenticado');
+
+    try {
+        const res = await API.get('/notes', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return res.data;
+    } catch (err) {
+        console.error('Error al obtener notas privadas:', err);
+        throw err;
+    }
+};
+
+export const actualizarNotaPrivada = async (nota) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Usuario no autenticado');
+
+    try {
+        const res = await API.put(`/notes/${nota.id}`, {
+            title: nota.titulo,
+            content: nota.contenido
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log("Nota privada actualizada:", res.data);
+        return res.data;
+    } catch (err) {
+        console.error("Error al actualizar nota privada:", err);
+        throw err;
+    }
+};
+
 export const eliminarNotaPublica = (id) => {
     const notasPublicas = obtenerNotasPublicas();
     const nuevasNotas = notasPublicas.filter(nota => nota.id !== id);

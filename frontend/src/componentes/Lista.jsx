@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { eliminarNotaPublica, obtenerNotasPublicas } from "../utils/CrearNota";
+import { eliminarNotaPublica, obtenerNotasPublicas, obtenerNotasPrivadas } from "../utils/CrearNota";
+
 import EditarNota from "./EditarNota";
 
 function Lista() {
@@ -9,19 +10,42 @@ function Lista() {
   useEffect(() => {
     const fetchNotas = async () => {
       try {
-        const notas = await obtenerNotasPublicas();
-        setNotasPublicas(notas);
+        const publicas = obtenerNotasPublicas();
+        const privadas = await obtenerNotasPrivadas();
+        const mapeadas = privadas.map((n) => ({
+          ...n,
+          id: n.id,
+          titulo: n.title,
+          contenido: n.content,
+          fecha: new Date(n.created_at).toLocaleString(),
+          usuario: 'privada',
+          esPrivada: true,
+        }));
+        setNotasPublicas([...publicas, ...mapeadas]);
       } catch (error) {
-        console.error("Error al obtener notas públicas:", error);
+        console.error("Error al obtener notas:", error);
       }
     };
+  
     fetchNotas();
   }, []);
+  
 
   const recargarNotas = async () => {
-    const nuevas = await obtenerNotasPublicas();
-    setNotasPublicas(nuevas);
+    const publicas = obtenerNotasPublicas();
+    const privadas = await obtenerNotasPrivadas();
+    const mapeadas = privadas.map((n) => ({
+      ...n,
+      id: n.id,
+      titulo: n.title,
+      contenido: n.content,
+      fecha: new Date(n.created_at).toLocaleString(),
+      usuario: 'privada',
+      esPrivada: true,
+    }));
+    setNotasPublicas([...publicas, ...mapeadas]);
   };
+  
 
   const handleEliminar = (id) => {
     console.log("Eliminar nota con id:", id);
