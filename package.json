@@ -1,0 +1,19 @@
+{
+  "name": "notasapp",
+  "version": "1.0.0",
+  "description": "Accede a tus notas sin anuncios y crea de manera rapida y segura",
+  "keywords": [
+    "Notas",
+    "estilo.",
+    "privacidad",
+    "y",
+    "segura"
+  ],
+  "license": "ISC",
+  "author": "Jhovan hernandez ramirez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
