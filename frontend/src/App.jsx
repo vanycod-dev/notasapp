@@ -4,6 +4,7 @@ import Informacion from './componentes/Info'
 import Layout from './pages/Layout'
 import Registro from './pages/Registro'
 import Login from './pages/Login'
+import Nota from './componentes/Nota'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<Informacion />} />
           <Route path='/informacion' element={<Informacion />} />
           <Route path='/registro' element={<Registro />} />
+          <Route path='/nota' element={<Nota />} />
           <Route path='/login' element={<Login />} />
         </Route>
       </Routes>

@@ -54,7 +54,7 @@ function Nav() {
                         <Links to="/registro" texto='Crear cuenta' onClick={handleLinkClick} />
                         <Links to="/login" texto='Iniciar sesión' onClick={handleLinkClick} />
                         <Links to="/" texto='Notas' onClick={handleLinkClick} />
-                        <Links to="/" texto='Crear Nota' onClick={handleLinkClick} />
+                        <Links to="/nota" texto='Crear Nota' onClick={handleLinkClick} />
                         <Links to="/informacion" texto='Información' onClick={handleLinkClick} />
                     </div>
                 )}
