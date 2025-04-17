@@ -1,0 +1,43 @@
+DROP DATABASE IF EXISTS app_notas;
+-- Crear la base de datos (si no existe)
+CREATE DATABASE IF NOT EXISTS app_notas;
+USE app_notas;
+
+-- Tabla de usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,  -- ¡Guardaremos un hash, no texto plano!
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de notas
+CREATE TABLE IF NOT EXISTS notas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    contenido TEXT,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id INT NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+USE app_notas;
+SELECT * FROM usuarios;
+SELECT * FROM notas;
+INSERT INTO usuarios (usuario, email, password) VALUES ('vanycod', 'vand@gmail.com', 'hola');
+
+-- DELIMITER ;
+
+   -- Puedes crear triggers para diferentes momentos:
+--    BEFORE INSERT  -- Antes de insertar
+--    AFTER INSERT   -- Después de insertar
+--    BEFORE UPDATE  -- Antes de actualizar
+--    AFTER UPDATE   -- Después de actualizar
+--    BEFORE DELETE  -- Antes de eliminar
+--    AFTER DELETE   -- Después de eliminar
+
+-- users: Almacena los usuarios registrados.
+-- notes: Almacena las notas, relacionándolas con user_id.
+-- is_public define si la nota es pública o privada.
+-- FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE: Si un usuario se elimina, sus notas también se eliminan automáticamente.MyPerla@j.01
