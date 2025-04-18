@@ -1,51 +1,46 @@
-const noteModel = require('../models/noteModel');
+const user = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// Crear usuario
-export.crearUsuario = async (req, res) => {
-    try {
-        const {usuario, email, password} = req.body;
-        const passwordHashed = await bcrypt.hash(password)
-    } catch (error) {
-        
+const register = async (req, res) => {
+  const { usuario, email, password } = req.body;
+  try {
+    const existingUser = await user.finByUsername(usuario);
+    const existingEmail = await user.finByEmail(email);
+    
+    if (existingUser) return res.status(400).json({ message: 'El usuario ya existe' });
+    if (existingEmail) return res.status(400).json({ message: 'El email ya existe' });
+
+    await user.create(usuario, email, password);
+    res.status(201).json({ message: 'Usuario creado exitosamente ', user: usuario });
+  
+  } catch (error) {
+    console.error('⚠️ Error al registrar el usuario ❌:', error);
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ message: 'El usuario o el email ya existe' });
     }
+    res.status(500).json({ message: 'Error al registrar el usuario' });
+  }
+};
+
+const login = async (req, res) => {
+  const { usuario, password } = req.body;
+  try {
+    const existingUser = await user.finByUsername(usuario);
+    if (!existingUser) return res.status(400).json({ message: 'Usuario no encontrado' });
+
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordValid) return res.status(400).json({ message: 'Contraseña incorrecta' });
+
+    const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+  
+  } catch (error) {
+    console.error('⚠️ Error al iniciar sesión ❌:', error);
+    res.status(500).json({ message: 'Error al iniciar sesión' });
+  }
 }
-
-// Crear nota
-exports.createNote = async (req, res) => {
-  try {
-    const { titulo, contenido } = req.body;
-    const usuario_id = req.user.id; // Asume que el middleware auth añade el user ID
-    const noteId = await noteModel.createNote(titulo, contenido, usuario_id);
-    res.status(201).json({ id: noteId, mensaje: 'Nota creada' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al crear la nota' });
-  }
-};
-
-// Actualizar nota
-exports.updateNote = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { titulo, contenido } = req.body;
-    const usuario_id = req.user.id;
-    const updated = await noteModel.updateNote(id, titulo, contenido, usuario_id);
-    if (!updated) return res.status(404).json({ error: 'Nota no encontrada' });
-    res.json({ mensaje: 'Nota actualizada' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar' });
-  }
-};
-
-// Eliminar nota
-exports.deleteNote = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const usuario_id = req.user.id;
-    const deleted = await noteModel.deleteNote(id, usuario_id);
-    if (!deleted) return res.status(404).json({ error: 'Nota no encontrada' });
-    res.json({ mensaje: 'Nota eliminada' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar' });
-  }
+module.exports = {
+  register,
+  login
 };

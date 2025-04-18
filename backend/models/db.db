@@ -41,3 +41,9 @@ INSERT INTO usuarios (usuario, email, password) VALUES ('vanycod', 'vand@gmail.c
 -- notes: Almacena las notas, relacionándolas con user_id.
 -- is_public define si la nota es pública o privada.
 -- FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE: Si un usuario se elimina, sus notas también se eliminan automáticamente.MyPerla@j.01
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=MyPerla@j.01
+DB_NAME=app_notas
+JWT_SECRET=tu_clave_secreta_jwt
