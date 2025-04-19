@@ -1,44 +1,42 @@
-const pool = require('./db');
+const connection = require('../models/db');
 
-// Crear una nota
-const createNote = async (titulo, contenido, usuario_id) => {
-  const [result] = await pool.query(
-    'INSERT INTO notas (titulo, contenido, usuario_id) VALUES (?, ?, ?)',
-    [titulo, contenido, usuario_id]
-  );
-  return result.insertId;
+const Note = {
+  create: (usuario_id, titulo, contenido) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'INSERT INTO notas (usuario_id, titulo, contenido) VALUES (?, ?, ?)';
+      connection.query(sql, [usuario_id, titulo, contenido], (error, results) => {
+        if (error) return reject(error);
+        resolve({ id: results.insertId, titulo, contenido });
+      });
+    });
+  },
+  getAll: (usuario_id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM notas WHERE usuario_id = ?';
+      connection.query(sql, [usuario_id], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+    });
+  },
+  update: (note_id, titulo, contenido) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'UPDATE notas SET titulo = ?, contenido = ? WHERE id = ?';
+      connection.query(sql, [titulo, contenido, note_id], (error, results) => {
+        if (error) return reject(error);
+        resolve(results.affectedRows);
+      });
+    });
+  },
+  delete: (note_id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM notas WHERE id = ?';
+      connection.query(sql, [note_id], (error, results) => {
+        if (error) return reject(error);
+        resolve(results.affectedRows);
+      });
+    });
+  }
 };
 
-// Obtener todas las notas de un usuario
-const getNotesByUser = async (usuario_id) => {
-  const [notes] = await pool.query(
-    'SELECT * FROM notas WHERE usuario_id = ?',
-    [usuario_id]
-  );
-  return notes;
-};
-
-// Actualizar una nota
-const updateNote = async (id, titulo, contenido, usuario_id) => {
-  const [result] = await pool.query(
-    'UPDATE notas SET titulo = ?, contenido = ? WHERE id = ? AND usuario_id = ?',
-    [titulo, contenido, id, usuario_id]
-  );
-  return result.affectedRows > 0;
-};
-
-// Eliminar una nota
-const deleteNote = async (id, usuario_id) => {
-  const [result] = await pool.query(
-    'DELETE FROM notas WHERE id = ? AND usuario_id = ?',
-    [id, usuario_id]
-  );
-  return result.affectedRows > 0;
-};
-
-module.exports = {
-  createNote,
-  getNotesByUser,
-  updateNote,
-  deleteNote,
-};
+module.exports = Note;

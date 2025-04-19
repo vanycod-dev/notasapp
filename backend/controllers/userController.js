@@ -4,43 +4,71 @@ const bcrypt = require('bcryptjs');
 
 const register = async (req, res) => {
   const { usuario, email, password } = req.body;
+
   try {
     const existingUser = await user.finByUsername(usuario);
     const existingEmail = await user.finByEmail(email);
-    
-    if (existingUser) return res.status(400).json({ message: 'El usuario ya existe' });
-    if (existingEmail) return res.status(400).json({ message: 'El email ya existe' });
+
+    if (existingUser || existingEmail) {
+      return res.status(400).json({
+        success: false,
+        message: 'El usuario o email ya existe',
+        data: null
+      });
+    }
 
     await user.create(usuario, email, password);
-    res.status(201).json({ message: 'Usuario creado exitosamente ', user: usuario });
-  
+    res.status(201).json({
+      success: true,
+      message: 'Usuario registrado exitosamente',
+      data: { usuario, email }
+    });
+
   } catch (error) {
-    console.error('⚠️ Error al registrar el usuario ❌:', error);
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ message: 'El usuario o el email ya existe' });
-    }
-    res.status(500).json({ message: 'Error al registrar el usuario' });
+    res.status(500).json({
+      success: false,
+      message: 'Error al registrar el usuario',
+      data: null
+    });
   }
 };
 
 const login = async (req, res) => {
   const { usuario, password } = req.body;
+
   try {
     const existingUser = await user.finByUsername(usuario);
-    if (!existingUser) return res.status(400).json({ message: 'Usuario no encontrado' });
+    if (!existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Usuario no encontrado',
+        data: null
+      });
+    }
 
     const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-    if (!isPasswordValid) return res.status(400).json({ message: 'Contraseña incorrecta' });
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Contraseña incorrecta',
+        data: null
+      });
+    }
 
     const token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Inicio de sesión exitoso', token });
-  
+    res.status(200).json({
+      success: true,
+      message: 'Inicio de sesión exitoso',
+      data: { token, user: { id: existingUser.id, usuario: existingUser.usuario } }
+    });
+
   } catch (error) {
-    console.error('⚠️ Error al iniciar sesión ❌:', error);
-    res.status(500).json({ message: 'Error al iniciar sesión' });
+    res.status(500).json({
+      success: false,
+      message: 'Error al iniciar sesión',
+      data: null
+    });
   }
-}
-module.exports = {
-  register,
-  login
 };
+
+module.exports = { register, login };

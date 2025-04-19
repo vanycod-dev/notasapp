@@ -1,40 +1,103 @@
-const noteModel = require('../models/noteModel');
+const note = require('../models/noteModel');
 
-// Crear nota
-exports.createNote = async (req, res) => {
+const createNote = async (req, res) => {
+  const { title, content } = req.body;
+  const usuario_id = req.userId; // <<-- ID del token
+
+  if (!title || !content) {
+    return res.status(400).json({
+      success: false,
+      message: 'El título y contenido son obligatorios',
+      data: null
+    });
+  }
+
   try {
-    const { titulo, contenido } = req.body;
-    const usuario_id = req.user.id; // Asume que el middleware auth añade el user ID
-    const noteId = await noteModel.createNote(titulo, contenido, usuario_id);
-    res.status(201).json({ id: noteId, mensaje: 'Nota creada' });
+    const nuevaNota = await note.create(usuario_id, title, content);
+    res.status(201).json({
+      success: true,
+      message: 'Nota creada exitosamente',
+      data: nuevaNota
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear la nota' });
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear la nota',
+      data: null
+    });
   }
 };
 
-// Actualizar nota
-exports.updateNote = async (req, res) => {
+const getAllNotes = async (req, res) => {
+  const usuario_id = req.userId; // <<-- ID del token
+
   try {
-    const { id } = req.params;
-    const { titulo, contenido } = req.body;
-    const usuario_id = req.user.id;
-    const updated = await noteModel.updateNote(id, titulo, contenido, usuario_id);
-    if (!updated) return res.status(404).json({ error: 'Nota no encontrada' });
-    res.json({ mensaje: 'Nota actualizada' });
+    const notas = await note.getAll(usuario_id);
+    res.status(200).json({
+      success: true,
+      message: 'Notas obtenidas exitosamente',
+      data: notas
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar' });
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener las notas',
+      data: null
+    });
   }
 };
 
-// Eliminar nota
-exports.deleteNote = async (req, res) => {
+const updateNote = async (req, res) => {
+  const { note_id } = req.params;
+  const { title, content } = req.body;
+
   try {
-    const { id } = req.params;
-    const usuario_id = req.user.id;
-    const deleted = await noteModel.deleteNote(id, usuario_id);
-    if (!deleted) return res.status(404).json({ error: 'Nota no encontrada' });
-    res.json({ mensaje: 'Nota eliminada' });
+    const affectedRows = await note.update(note_id, title, content);
+    if (affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nota no encontrada',
+        data: null
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Nota actualizada exitosamente',
+      data: { note_id }
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar' });
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar la nota',
+      data: null
+    });
   }
 };
+
+const deleteNote = async (req, res) => {
+  const { note_id } = req.params;
+
+  try {
+    const affectedRows = await note.delete(note_id);
+    if (affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nota no encontrada',
+        data: null
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Nota eliminada exitosamente',
+      data: { note_id }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar la nota',
+      data: null
+    });
+  }
+};
+
+module.exports = { createNote, getAllNotes, updateNote, deleteNote };
