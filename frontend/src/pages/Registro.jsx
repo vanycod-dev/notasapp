@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { validarRegistro } from "../utils/Validador";
 import login from "../utils/RegistroAxios";
 
@@ -11,6 +12,7 @@ function Registro() {
     });
     const [errores, setErrores] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navegar = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,7 +36,6 @@ function Registro() {
         setIsSubmitting(true);
         
         const formularioValidado = validarRegistro(form);
-        
         if (Object.keys(formularioValidado).length > 0) {
             setErrores(formularioValidado);
             setIsSubmitting(false);
@@ -42,34 +43,26 @@ function Registro() {
         }
         
         try {
-            // Aquí iría la llamada a tu API
             const nuevoRegistro = {
                 usuario: form.nombre,
                 email: form.correo,
                 password: form.contrasena
-            }
-            console.log("Formulario válido, enviando:", nuevoRegistro);
-
-
-            //enviar form
-            login(nuevoRegistro);
-
+            };
+            
+            await login(nuevoRegistro); // Espera a que la promesa se resuelva
+            
             // Reset después del éxito
-            setForm({
-                nombre: "",
-                correo: "",
-                contrasena: "",
-                password2: ""
-            });
+            setForm({ nombre: "", correo: "", contrasena: "", password2: "" });
             setErrores({});
             alert("Registro exitoso!");
+            navegar("/login"); // Redirige a la página de inicio de sesión
         } catch (error) {
             console.error("Error en el registro:", error);
-            alert("Ocurrió un error durante el registro");
+            alert(error.response?.data?.message || "Error durante el registro");
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     return ( 
         <div className="max-w-md mx-auto mt-8 p-4">
