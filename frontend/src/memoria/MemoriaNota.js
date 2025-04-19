@@ -1,4 +1,5 @@
-import { guardarNotaPrivada, guardarNotaPublica } from "./Memoria";
+import api from "../utils/axiosConfig";
+import { guardarNotaPublica } from "./Memoria";
 
 const crearId = () => {
     return new Date().getTime().toString();
@@ -19,11 +20,20 @@ export const crearNota = (nota) => {
     return nuevaNota;
 }
 
-export const crearNotaPrivada = (nota) => {
+export const crearNotaPrivada = async (nota) => {
     const nuevaNota = {
         title: nota.titulo,
         content: nota.contenido,
     }
-    guardarNotaPrivada(nuevaNota);
-    console.log('Nota privada:', nuevaNota);
+    try {
+        const response = await api.post('/notes', nuevaNota);
+        console.log('Nota privada enviada');
+        const notaCreada = response.data;
+        // console.log('Nota privada creada:', notaCreada);
+        return notaCreada;
+
+    }
+    catch (error) {
+        console.error('Error al crear nota privada:', error);
+    }
 }

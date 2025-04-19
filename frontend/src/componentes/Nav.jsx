@@ -58,7 +58,7 @@ function Nav() {
                 >
                     {isAuthenticated ? (
                         <>
-                            <NavLink to="/" text="Notas" onClick={handleLinkClick} />
+                            <NavLink to="/misnotas" text="Notas" onClick={handleLinkClick} />
                             <NavLink to="/nota" text="Crear Nota" onClick={handleLinkClick} />
                             <NavLink to="/informacion" text="Información" onClick={handleLinkClick} />
                             <button 
@@ -72,7 +72,7 @@ function Nav() {
                         <>
                             <NavLink to="/registro" text="Crear cuenta" onClick={handleLinkClick} />
                             <NavLink to="/login" text="Iniciar sesión" onClick={handleLinkClick} />
-                            <NavLink to="/" text="Notas" onClick={handleLinkClick} />
+                            <NavLink to="/misnotas" text="Notas" onClick={handleLinkClick} />
                             <NavLink to="/nota" text="Crear Nota" onClick={handleLinkClick} />
                             <NavLink to="/informacion" text="Información" onClick={handleLinkClick} />
                         </>

@@ -1,8 +1,6 @@
 import api from "../utils/axiosConfig";
 
 const NOTAS_PUBLICAS = 'NotasPublicas';
-const NOTAS_PRIVADAS = 'NotasPrivadas';
-const USUARIO = 'Usuario';
 
 // Obtener todas las notas públicas
 export const obtenerNotasPublicas = () => {
@@ -17,19 +15,12 @@ export const guardarNotaPublica = (nota) => {
     return nota;
 }
 
-// Guardar nota privada
-export const guardarNotaPrivada = (nota) => {
-    const response = api.post('/notes/', nota);
-    console.log('Nota privada enviada:', response.data);
-    return response;
-}
-
-// Funciones de usuario
-export const obtenerUsuario = () => {
-    return JSON.parse(localStorage.getItem(USUARIO)) || null;
-}
-
-export const guardarUsuario = (usuario) => {
-    localStorage.setItem(USUARIO, JSON.stringify(usuario));
-    return usuario;
+export const obtenerNotasPrivadas = async () => {
+    try {
+        const response = await api.get('/notes');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener notas privadas:', error);
+        return [];
+    }
 }
