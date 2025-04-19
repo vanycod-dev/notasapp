@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { validarRegistro } from "../utils/Validador";
+import login from "../utils/RegistroAxios";
 
 function Registro() {
     const [form, setForm] = useState({
@@ -42,9 +43,17 @@ function Registro() {
         
         try {
             // Aquí iría la llamada a tu API
-            console.log("Formulario válido, enviando:", form);
-            // await api.registrarUsuario(form);
-            
+            const nuevoRegistro = {
+                usuario: form.nombre,
+                email: form.correo,
+                password: form.contrasena
+            }
+            console.log("Formulario válido, enviando:", nuevoRegistro);
+
+
+            //enviar form
+            login(nuevoRegistro);
+
             // Reset después del éxito
             setForm({
                 nombre: "",
