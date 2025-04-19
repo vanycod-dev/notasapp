@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { validarRegistro } from "../utils/Validador";
-import login from "../utils/RegistroAxios";
+import registro from "../utils/RegistroAxios";
 
 function Registro() {
     const [form, setForm] = useState({
@@ -49,7 +49,7 @@ function Registro() {
                 password: form.contrasena
             };
             
-            await login(nuevoRegistro); // Espera a que la promesa se resuelva
+            await registro(nuevoRegistro); // Espera a que la promesa se resuelva
             
             // Reset después del éxito
             setForm({ nombre: "", correo: "", contrasena: "", password2: "" });

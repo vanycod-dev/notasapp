@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { validarLogin } from "../utils/Validador";
+import { useNavigate } from "react-router";
+import { login } from "../utils/LoginAxios"; // Importa la función de login
 
 function Login() {
     const [form, setForm] = useState({
@@ -8,6 +9,7 @@ function Login() {
     });
     const [errores, setErrores] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -16,7 +18,6 @@ function Login() {
             [name]: value
         }));
         
-        // Limpiar error al editar
         if (errores[name]) {
             setErrores(prev => {
                 const newErrores = {...prev};
@@ -30,32 +31,30 @@ function Login() {
         e.preventDefault();
         setIsSubmitting(true);
         
-        const erroresValidacion = validarLogin(form);
-        
-        if (Object.keys(erroresValidacion).length > 0) {
-            setErrores(erroresValidacion);
-            setIsSubmitting(false);
-            return;
-        }
-        
         try {
-            // Aquí iría la llamada a tu API de login
-            console.log("Credenciales válidas, iniciando sesión:", form);
-            // await api.iniciarSesion(form);
+            const credenciales = {
+                usuario: form.usuario,
+                password: form.contrasena
+            };
             
-            // Reset después del éxito
-            setForm({
-                usuario: "",
-                contrasena: ""
-            });
-            setErrores({});
+            // response ahora es directamente response.data del backend
+            const response = await login(credenciales);
             
-            // Redirigir al dashboard o página principal
-            // navigate('/dashboard');
+            // Acceso correcto: response.data.token
+            if (!response.data?.token) {
+                throw new Error('Token no recibido en la respuesta');
+            }
+            
+            localStorage.setItem('token', response.data.token);
+            navigate('/informacion');
             
         } catch (error) {
-            console.error("Error en el login:", error);
-            setErrores({ general: "Credenciales incorrectas" });
+            console.error("Error completo:", error);
+            setErrores({ 
+                general: error.response?.data?.message || 
+                        error.message || 
+                        "Error al iniciar sesión"
+            });
         } finally {
             setIsSubmitting(false);
         }

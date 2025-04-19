@@ -1,6 +1,6 @@
 import api from "./axiosConfig";
 
-const login = async (data) => {
+const registro = async (data) => {
     console.log('Datos recibidos:', data); // { usuario: "...", email: "...", password: "..." }
 
     try {
@@ -13,4 +13,4 @@ const login = async (data) => {
     }
 };
 
-export default login;
+export default registro;
