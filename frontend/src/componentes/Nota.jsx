@@ -12,7 +12,7 @@ function Nota() {
 
     useEffect(() => {
         // Lógica de autenticación aquí si es necesaria
-        setAutenticado(true); // Cambia a true si el usuario está autenticado
+        setAutenticado(false); // Cambia a true si el usuario está autenticado
     }, []);
 
     const enviarNota = () => {

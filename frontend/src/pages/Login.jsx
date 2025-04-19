@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
-import { login } from "../utils/LoginAxios"; // Importa la función de login
+import { login as loginService } from "../utils/LoginAxios"; // Renombramos la importación
+import { AuthContext } from "../memoria/AuthContext";
 
 function Login() {
     const [form, setForm] = useState({
@@ -9,8 +10,10 @@ function Login() {
     });
     const [errores, setErrores] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login: contextLogin } = useContext(AuthContext); // Renombramos para evitar conflicto
     const navigate = useNavigate();
 
+    // Maneja solo los cambios en los inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({
@@ -19,11 +22,10 @@ function Login() {
         }));
         
         if (errores[name]) {
-            setErrores(prev => {
-                const newErrores = {...prev};
-                delete newErrores[name];
-                return newErrores;
-            });
+            setErrores(prev => ({
+                ...prev,
+                [name]: undefined
+            }));
         }
     }
 
@@ -32,28 +34,32 @@ function Login() {
         setIsSubmitting(true);
         
         try {
+            // 1. Preparar las credenciales para enviar al backend
             const credenciales = {
                 usuario: form.usuario,
-                password: form.contrasena
+                password: form.contrasena // El backend espera "password" no "contrasena"
             };
             
-            // response ahora es directamente response.data del backend
-            const response = await login(credenciales);
+            // 2. Llamar al servicio de login (API)
+            const response = await loginService(credenciales);
             
-            // Acceso correcto: response.data.token
+            // 3. Verificar que recibimos el token
             if (!response.data?.token) {
-                throw new Error('Token no recibido en la respuesta');
+                throw new Error('No se recibió token en la respuesta');
             }
             
-            localStorage.setItem('token', response.data.token);
+            // 4. Actualizar el estado de autenticación (contexto)
+            contextLogin(response.data.token);
+            
+            // 5. Redirigir al usuario
             navigate('/informacion');
             
         } catch (error) {
-            console.error("Error completo:", error);
+            console.error("Error en login:", error);
             setErrores({ 
                 general: error.response?.data?.message || 
                         error.message || 
-                        "Error al iniciar sesión"
+                        "Credenciales incorrectas"
             });
         } finally {
             setIsSubmitting(false);

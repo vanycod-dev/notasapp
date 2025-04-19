@@ -5,10 +5,12 @@ import Layout from './pages/Layout'
 import Registro from './pages/Registro'
 import Login from './pages/Login'
 import Nota from './componentes/Nota'
+import { AuthProvider } from './memoria/AuthContext'
 
 function App() {
 
   return (
+    <AuthProvider>
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route index element={<Informacion />} />
@@ -18,6 +20,7 @@ function App() {
           <Route path='/login' element={<Login />} />
         </Route>
       </Routes>
+    </AuthProvider>
   )
 }
 
