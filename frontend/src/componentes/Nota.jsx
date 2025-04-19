@@ -1,19 +1,15 @@
-import { useRef, useState, useEffect } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { notaCreada, notaPrivadaCreada } from "../memoria/MemoriaNota";
+import { crearNota, crearNotaPrivada } from "../memoria/MemoriaNota";
+import { AuthContext } from "../memoria/AuthContext";
 
 function Nota() {
     const [titulo, setTitulo] = useState('');
     const [contenido, setContenido] = useState('');
-    const [publico, setPublico] = useState('publico');
-    const [autenticado, setAutenticado] = useState(false);
+    const [privacidad, setPrivacidad] = useState('publico'); // 'publico' o 'privado'
     const editorRef = useRef(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Lógica de autenticación aquí si es necesaria
-        setAutenticado(false); // Cambia a true si el usuario está autenticado
-    }, []);
+    const { isAuthenticated } = useContext(AuthContext);
 
     const enviarNota = () => {
         if (!titulo.trim()) {
@@ -28,21 +24,16 @@ function Nota() {
         
         const nota = {
             titulo: titulo,
-            contenido: contenido,
-            publico: publico
+            contenido: contenido
         };
 
-        if(autenticado) {
-            notaPrivadaCreada(nota); // nota privada enviada a memoria
-            console.log('Nota privada enviada paso: 00, nota: ', nota);
-            navigate('/informacion');
-            return;
+        if (isAuthenticated && privacidad === 'privado') {
+            crearNotaPrivada(nota);
+            console.log('Nota privada creada desde front:', nota);
+        } else {
+            crearNota(nota);
+            console.log('Nota pública creada desde front:', nota);
         }
-        
-        console.log('Nota enviada paso: 00, nota: ', nota);
-        notaCreada(nota); // nota publica enviada a memoria
-        
-
         navigate('/informacion');
     }
 
@@ -109,19 +100,19 @@ function Nota() {
                 />
                 
                 <div className="mb-2">
-                    {!autenticado ? (
+                    {isAuthenticated ? (
+                        <select 
+                            value={privacidad}
+                            onChange={(e) => setPrivacidad(e.target.value)}
+                            className="border rounded p-2 bg-white text-gray-800 font-medium border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                            <option value="publico">Público</option>
+                            <option value="privado">Privado</option>
+                        </select>
+                    ) : (
                         <div className="text-center p-1.5 border rounded inline-block text-gray-800 bg-white">
                             Público
                         </div>
-                    ) : (
-                        <select 
-                            value={publico}
-                            className="border rounded p-1.5 bg-white"
-                            onChange={(e) => setPublico(e.target.value)}
-                        >
-                            <option value="public">Público</option>
-                            <option value="priv">Privado</option>
-                        </select>
                     )}
                 </div>
 

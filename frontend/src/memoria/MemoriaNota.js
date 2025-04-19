@@ -1,28 +1,29 @@
-import { guardarNota } from "./Memoria";
+import { guardarNotaPrivada, guardarNotaPublica } from "./Memoria";
 
 const crearId = () => {
-    const id = new Date().getTime();
-    return id;
+    return new Date().getTime().toString();
 }
-export const notaCreada = (nota) => {
+
+export const crearNota = (nota) => {
     const nuevaNota = {
         id: crearId(),
         ...nota,
         fechaCreacion: new Date().toISOString(),
         usuario: 'anonimo',
+        privacodad: 'publico',
     };
-    console.log('Nota enviada paso: 01 nota:', nuevaNota);
-    guardarNota(nuevaNota); // Guardar la nota en memoria
+
+    guardarNotaPublica(nuevaNota);
+    console.log('Nota pública creada:', nuevaNota);
+
     return nuevaNota;
 }
 
-export const notaPrivadaCreada = (nota) => {
+export const crearNotaPrivada = (nota) => {
     const nuevaNota = {
-        id: crearId(),
-        ...nota,
-        fechaCreacion: new Date().toISOString(),
-        usuario: 'vany',
-    };
-    console.log('Nota privada enviada paso: 01 nota:', nuevaNota);
-    return nuevaNota;
+        title: nota.titulo,
+        content: nota.contenido,
+    }
+    guardarNotaPrivada(nuevaNota);
+    console.log('Nota privada:', nuevaNota);
 }
