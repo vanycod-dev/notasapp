@@ -9,9 +9,9 @@ export const crearNota = (nota) => {
     const nuevaNota = {
         id: crearId(),
         ...nota,
-        fechaCreacion: new Date().toISOString(),
+        fecha_creacion: new Date().toISOString(),
+        esPrivada: false,
         usuario: 'anonimo',
-        privacodad: 'publico',
     };
 
     guardarNotaPublica(nuevaNota);
@@ -21,19 +21,25 @@ export const crearNota = (nota) => {
 }
 
 export const crearNotaPrivada = async (nota) => {
-    const nuevaNota = {
-        title: nota.titulo,
-        content: nota.contenido,
-    }
     try {
-        const response = await api.post('/notes', nuevaNota);
-        console.log('Nota privada enviada');
-        const notaCreada = response.data;
-        // console.log('Nota privada creada:', notaCreada);
-        return notaCreada;
-
-    }
-    catch (error) {
+        const response = await api.post('/notes', {
+            title: nota.titulo,
+            content: nota.contenido,
+            esPrivada: true // Aunque no se guarde en BD, lo enviamos por consistencia
+        });
+        return response.data;
+    } catch (error) {
         console.error('Error al crear nota privada:', error);
+        throw error;
+    }
+}
+
+export const eliminarNotaPrivada = async (id) => {
+    try {
+        await api.delete(`/notes/${id}`);
+        return true;
+    } catch (error) {
+        console.error('Error al eliminar nota privada:', error);
+        throw error;
     }
 }

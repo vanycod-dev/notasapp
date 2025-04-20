@@ -1,78 +1,46 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale'; // Opcional: para español
+// src/components/NotasGrid.jsx
+import NotaCard from './NotaCard';
 
-const NotaCard = ({ nota, onDelete, onEdit }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const NotasGrid = ({ notas, onDeleteNota, onEditNota, esAutenticado }) => {
+  // Separar notas públicas y privadas si es necesario
+  const notasPublicas = notas.filter(nota => !nota.esPrivada);
+  const notasPrivadas = notas.filter(nota => nota.esPrivada);
 
   return (
-    <div 
-      className={`relative bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ${isHovered ? 'shadow-lg transform -translate-y-1' : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Badge de privacidad */}
-      <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold ${nota.esPrivada ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-        {nota.esPrivada ? 'Privada' : 'Pública'}
-      </div>
-
-      {/* Contenido de la tarjeta */}
-      <div className="p-5">
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-bold text-gray-800 mb-2 truncate">{nota.titulo}</h3>
-        </div>
-        
-        {/* Contenido con límite de líneas */}
-        <div className="text-gray-600 mb-4 line-clamp-3" dangerouslySetInnerHTML={{ __html: nota.contenido }}></div>
-        
-        {/* Fecha y acciones */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500">
-            {format(new Date(nota.fechaCreacion), "d 'de' MMMM yyyy", { locale: es })}
-          </span>
-          
-          {/* Botones de acción (aparecen al hover) */}
-          <div className={`flex space-x-2 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <button 
-              onClick={() => onEdit(nota)}
-              className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
-              title="Editar nota"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button 
-              onClick={() => onDelete(nota.id)}
-              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-              title="Eliminar nota"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
+    <div className="space-y-6">
+      {esAutenticado && notasPrivadas.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 px-2">Notas Privadas</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {notasPrivadas.map(nota => (
+              <NotaCard 
+                key={`privada-${nota.id}`} 
+                nota={nota}
+                onDelete={onDeleteNota}
+                onEdit={onEditNota}
+              />
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Efecto de acento de color */}
-      <div className={`h-1 w-full ${nota.esPrivada ? 'bg-purple-500' : 'bg-blue-500'}`}></div>
-    </div>
-  );
-};
-
-// Componente contenedor de las tarjetas
-const NotasGrid = ({ notas, onDeleteNota, onEditNota }) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-      {notas.map(nota => (
-        <NotaCard 
-          key={nota.id} 
-          nota={nota} 
-          onDelete={onDeleteNota}
-          onEdit={onEditNota}
-        />
-      ))}
+      {notasPublicas.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 px-2">
+            {esAutenticado ? 'Notas Públicas' : 'Todas las Notas'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {notasPublicas.map(nota => (
+              <NotaCard 
+                key={`publica-${nota.id}`}
+                nota={nota}
+                onDelete={onDeleteNota}
+                onEdit={onEditNota}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
