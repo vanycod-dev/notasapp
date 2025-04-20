@@ -13,6 +13,15 @@ export const guardarNotaPublica = (nota) => {
     return nota;
 }
 
+export const editarNotaPublica = (notaActualizada) => {
+    const notasPublicas = obtenerNotasPublicas();
+    const nuevasNotas = notasPublicas.map(nota => 
+        nota.id === notaActualizada.id ? notaActualizada : nota
+    );
+    localStorage.setItem(NOTAS_PUBLICAS, JSON.stringify(nuevasNotas));
+    return notaActualizada;
+}
+
 export const eliminarNotaPublica = (id) => {
     const notasPublicas = obtenerNotasPublicas();
     const nuevasNotas = notasPublicas.filter(nota => nota.id !== id);

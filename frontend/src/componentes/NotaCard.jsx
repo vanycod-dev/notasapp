@@ -1,4 +1,3 @@
-// src/components/NotaCard.jsx
 import { useState } from 'react';
 
 const NotaCard = ({ nota, onDelete, onEdit }) => {
@@ -39,6 +38,7 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
             })}
           </span>
           
+          {/* Botones de acción */}
           <div className={`flex space-x-2 transition-opacity duration-200 ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}>

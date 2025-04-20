@@ -1,5 +1,5 @@
 import api from "../utils/axiosConfig";
-import { guardarNotaPublica } from "./Memoria";
+import { editarNotaPublica, guardarNotaPublica } from "./Memoria";
 
 const crearId = () => {
     return new Date().getTime().toString();
@@ -18,6 +18,24 @@ export const crearNota = (nota) => {
     console.log('Nota pública creada:', nuevaNota);
 
     return nuevaNota;
+}
+// Función unificada para editar notas
+export const editarNotaPrivada = async (nota) => {
+    try {
+        const response = await api.put(`/notes/${nota.id}`, {
+            title: nota.titulo,
+            content: nota.contenido,
+            esPrivada: true
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al editar nota privada:', error);
+        throw error;
+    }
+};
+
+export const editarNota = (nota) => {
+    return nota.esPrivada ? editarNotaPrivada(nota) : editarNotaPublica(nota);
 }
 
 export const crearNotaPrivada = async (nota) => {
