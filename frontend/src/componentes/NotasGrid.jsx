@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import NotaCard from './NotaCard';
 import ModalEditarNota from './ModalEditarNota';
+import { editarNota } from '../memoria/MemoriaNota';
 
 const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
   // Estado para controlar la nota que se está editando
@@ -8,9 +9,7 @@ const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
   
   // Función para manejar la actualización de notas
   const handleActualizarNota = (notaActualizada) => {
-    onDeleteNota(notaActualizada.id); // Elimina la nota vieja (si es necesario)
-    // Aquí deberías tener una función para actualizar el estado de las notas
-    // Por ejemplo: onActualizarNota(notaActualizada);
+    editarNota(notaActualizada)
     setNotaEditando(null);
   };
 

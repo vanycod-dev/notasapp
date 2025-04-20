@@ -40,16 +40,6 @@ const MisNotas = () => {
     fetchNotas();
   }, [isAuthenticated]);
 
-  const handleDelete = (id) => {
-    if (window.confirm('¿Estás seguro de eliminar esta nota?')) {
-      setNotas(notas.filter(nota => nota.id !== id));
-    }
-  };
-
-  const handleEdit = (nota) => {
-    navigate(`/editar-nota/${nota.id}`, { state: { nota } });
-  };
-
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 px-4">Mis Notas</h1>
@@ -84,9 +74,7 @@ const MisNotas = () => {
 
       {!loading && notas.length > 0 && (
         <NotasGrid 
-          notas={notas} 
-          onDeleteNota={handleDelete}
-          onEditNota={handleEdit}
+          notas={notas}
           esAutenticado={isAuthenticated}
         />
       )}
