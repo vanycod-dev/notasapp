@@ -5,3 +5,11 @@ body {
     padding: 0;
     box-sizing: border-box;
 }
+/* Personalizar scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #c7d2fe;
+    border-radius: 4px;
+  }

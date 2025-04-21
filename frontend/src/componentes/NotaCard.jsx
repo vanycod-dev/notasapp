@@ -5,7 +5,7 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
 
   return (
     <div 
-      className={`relative bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ${
+      className={`relative bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 h-[200px] flex flex-col ${
         isHovered ? 'shadow-lg transform -translate-y-1' : ''
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -18,24 +18,23 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
         {nota.esPrivada ? 'Privada' : 'Pública'}
       </div>
 
-      {/* Contenido de la tarjeta */}
-      <div className="p-5">
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-bold text-gray-800 mb-2 truncate">{nota.titulo}</h3>
+      {/* Contenido de la tarjeta - Contenedor principal con altura controlada */}
+      <div className="p-4 flex flex-col h-full">
+        {/* Encabezado con título (altura fija) */}
+        <div className="flex justify-between items-start mb-2 h-8 overflow-hidden">
+          <h3 className="text-lg font-bold text-gray-800 truncate">{nota.titulo}</h3>
         </div>
         
+        {/* Contenido de la nota (altura flexible con scroll si es necesario) */}
         <div 
-          className="text-gray-600 mb-4 line-clamp-3 prose" 
+          className="text-gray-600 h-16 text-sm flex-grow overflow-y-auto mb-2 custom-scrollbar"
           dangerouslySetInnerHTML={{ __html: nota.contenido }}
-        ></div>
+        />
         
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500">
-            {new Date(nota.fechaCreacion).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            })}
+        {/* Pie de tarjeta (altura fija) */}
+        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+          <span className="text-xs text-gray-500">
+            {new Date(nota.fechaCreacion).toLocaleDateString('es-ES')}
           </span>
           
           {/* Botones de acción */}
@@ -43,8 +42,11 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}>
             <button 
-              onClick={() => onEdit(nota)}
-              className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-1 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
               title="Editar nota"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,8 +54,11 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
               </svg>
             </button>
             <button 
-              onClick={() => onDelete(nota.id)}
-              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="p-1 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
               title="Eliminar nota"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +69,7 @@ const NotaCard = ({ nota, onDelete, onEdit }) => {
         </div>
       </div>
 
-      {/* Efecto de acento de color */}
+      {/* Barra de color inferior */}
       <div className={`h-1 w-full ${nota.esPrivada ? 'bg-purple-500' : 'bg-blue-500'}`}></div>
     </div>
   );

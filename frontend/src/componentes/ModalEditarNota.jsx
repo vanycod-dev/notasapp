@@ -50,7 +50,7 @@ function ModalEditarNota({ nota, onClose, onSave }) {
     };
 
     return ( 
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed h-fit inset-0 bg-black/25 bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="max-w-2xl bg-white rounded-lg shadow-xl w-full">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Editar Nota</h3>
@@ -113,7 +113,7 @@ function ModalEditarNota({ nota, onClose, onSave }) {
                     </div>
 
                     <div 
-                        className="p-2.5 border rounded min-h-[200px] max-h-[400px] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                        className="p-2.5 border rounded min-h-[200px] max-h-[250px] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
                         contentEditable={true} 
                         ref={editorRef} 
                         suppressContentEditableWarning={true}

@@ -64,10 +64,16 @@ export const editarNota = (nota) => {
 }
 
 export const eliminarNota = async (id, esPrivada) => {
-    if(esPrivada === true) {
-        eliminarNotaPrivada(id);
-    } else if(esPrivada === false) {
-        eliminarNotaPublica(id);
+    try {
+        if(esPrivada === true) {
+            await eliminarNotaPrivada(id);
+        } else if(esPrivada === false) {
+            eliminarNotaPublica(id);
+        }
+        return true;
+    } catch (error) {
+        console.error('Error al eliminar nota:', error);
+        throw error;
     }
 }
 
