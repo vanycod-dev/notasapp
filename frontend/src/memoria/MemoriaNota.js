@@ -1,5 +1,5 @@
 import api from "../utils/axiosConfig";
-import { editarNotaPublica, guardarNotaPublica } from "./Memoria";
+import { editarNotaPublica, eliminarNotaPublica, guardarNotaPublica } from "./Memoria";
 
 const crearId = () => {
     return new Date().getTime().toString();
@@ -19,24 +19,6 @@ export const crearNota = (nota) => {
 
     return nuevaNota;
 }
-// Función unificada para editar notas
-export const editarNotaPrivada = async (nota) => {
-    try {
-        const response = await api.put(`/notes/${nota.id}`, {
-            title: nota.titulo,
-            content: nota.contenido,
-            esPrivada: true
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error al editar nota privada:', error);
-        throw error;
-    }
-};
-
-export const editarNota = (nota) => {
-    return nota.esPrivada ? editarNotaPrivada(nota) : editarNotaPublica(nota);
-}
 
 export const crearNotaPrivada = async (nota) => {
     try {
@@ -52,12 +34,40 @@ export const crearNotaPrivada = async (nota) => {
     }
 }
 
-export const eliminarNotaPrivada = async (id) => {
+// Función unificada para editar notas
+export const editarNotaPrivada = async (nota) => {
     try {
-        await api.delete(`/notes/${id}`);
-        return true;
+        const response = await api.put(`/notes/${nota.id}`, {
+            title: nota.titulo,
+            content: nota.contenido,
+            esPrivada: true
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al editar nota privada:', error);
+        throw error;
+    }
+};
+
+const eliminarNotaPrivada = async (id) => {
+    try {
+        const response = await api.delete(`/notes/${id}`);
+        return response.data;
     } catch (error) {
         console.error('Error al eliminar nota privada:', error);
         throw error;
     }
 }
+
+export const editarNota = (nota) => {
+    return nota.esPrivada ? editarNotaPrivada(nota) : editarNotaPublica(nota);
+}
+
+export const eliminarNota = async (id, esPrivada) => {
+    if(esPrivada === true) {
+        eliminarNotaPrivada(id);
+    } else if(esPrivada === false) {
+        eliminarNotaPublica(id);
+    }
+}
+

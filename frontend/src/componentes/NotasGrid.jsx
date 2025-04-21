@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import NotaCard from './NotaCard';
 import ModalEditarNota from './ModalEditarNota';
-import { editarNota } from '../memoria/MemoriaNota';
+import { editarNota, eliminarNota } from '../memoria/MemoriaNota';
 
-const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
+const NotasGrid = ({ notas, esAutenticado }) => {
   // Estado para controlar la nota que se está editando
   const [notaEditando, setNotaEditando] = useState(null);
   
@@ -11,6 +11,14 @@ const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
   const handleActualizarNota = (notaActualizada) => {
     editarNota(notaActualizada)
     setNotaEditando(null);
+  };
+
+  // Función para manejar la eliminación de notas
+  const habndelDeleteNota = (nota) => () => {
+    const [id, privada] = [nota.id, nota.esPrivada];
+    console.log(`Nota con ID ${id} eliminada`);
+    console.log(`Nota de tipo ${privada} eliminada`);
+    eliminarNota(id, privada);
   };
 
   // Separar notas públicas y privadas
@@ -37,7 +45,7 @@ const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
               <NotaCard 
                 key={`privada-${nota.id}`} 
                 nota={nota}
-                onDelete={onDeleteNota}
+                onDelete={habndelDeleteNota(nota)}
                 onEdit={() => setNotaEditando(nota)}
               />
             ))}
@@ -56,7 +64,7 @@ const NotasGrid = ({ notas, onDeleteNota, esAutenticado }) => {
               <NotaCard 
                 key={`publica-${nota.id}`}
                 nota={nota}
-                onDelete={onDeleteNota}
+                onDelete={habndelDeleteNota(nota)}
                 onEdit={() => setNotaEditando(nota)}
               />
             ))}

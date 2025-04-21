@@ -64,7 +64,7 @@ const MisNotas = () => {
               : "Inicia sesión para crear notas privadas o crea una nota pública"}
           </p>
           <button 
-            onClick={() => navigate(isAuthenticated ? '/crear-nota' : '/registro')}
+            onClick={() => navigate(isAuthenticated ? '/nota' : '/registro')}
             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
           >
             {isAuthenticated ? 'Crear Nota' : 'Registrarse'}
