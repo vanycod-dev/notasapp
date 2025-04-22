@@ -50,7 +50,7 @@ function ModalEditarNota({ nota, onClose, onSave }) {
     };
 
     return ( 
-        <div className="fixed h-fit inset-0 bg-black/25 bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed h-full inset-0 bg-black/45 bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="max-w-2xl bg-white rounded-lg shadow-xl w-full">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Editar Nota</h3>

@@ -1,27 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NotaCard from './NotaCard';
 import ModalEditarNota from './ModalEditarNota';
+import ModalConfirmacion from './ModalConfirmacion';
 import { editarNota, eliminarNota } from '../memoria/MemoriaNota';
 
-const NotasGrid = ({ notas, esAutenticado }) => {
-  // Estado para controlar la nota que se está editando
+const NotasGrid = ({ notas: notasIniciales, esAutenticado, onNotaUpdated }) => {
   const [notaEditando, setNotaEditando] = useState(null);
-  
-  // Función para manejar la actualización de notas
-  const handleActualizarNota = (notaActualizada) => {
-    editarNota(notaActualizada)
-    setNotaEditando(null);
+  const [notaAEliminar, setNotaAEliminar] = useState(null);
+  const [notas, setNotas] = useState(notasIniciales);
+
+  useEffect(() => {
+    setNotas(notasIniciales);
+  }, [notasIniciales]);
+
+  const handleActualizarNota = async (notaActualizada) => {
+    try {
+      await editarNota(notaActualizada);
+      setNotas(prevNotas => 
+        prevNotas.map(nota => 
+          nota.id === notaActualizada.id ? notaActualizada : nota
+        )
+      );
+      setNotaEditando(null);
+      // Notificar al componente padre para recargar datos
+      onNotaUpdated();
+    } catch (error) {
+      console.error('Error al actualizar nota:', error);
+    }
   };
 
-  // Función para manejar la eliminación de notas
-  const habndelDeleteNota = (nota) => () => {
-    const [id, privada] = [nota.id, nota.esPrivada];
-    console.log(`Nota con ID ${id} eliminada`);
-    console.log(`Nota de tipo ${privada} eliminada`);
-    eliminarNota(id, privada);
+  const handleDeleteNota = (nota) => {
+    setNotaAEliminar(nota);
   };
 
-  // Separar notas públicas y privadas
+  const confirmarEliminacion = async () => {
+    const { id, esPrivada } = notaAEliminar;
+    try {
+      await eliminarNota(id, esPrivada);
+      setNotas(prevNotas => prevNotas.filter(nota => nota.id !== id));
+      setNotaAEliminar(null);
+      // Notificar al componente padre para recargar datos
+      onNotaUpdated();
+    } catch (error) {
+      console.error('Error al eliminar nota:', error);
+    }
+  };
+
+  // Resto del código se mantiene igual...
   const notasPublicas = notas.filter(nota => !nota.esPrivada);
   const notasPrivadas = notas.filter(nota => nota.esPrivada);
 
@@ -36,6 +61,15 @@ const NotasGrid = ({ notas, esAutenticado }) => {
         />
       )}
 
+      {/* Modal de confirmación de eliminación */}
+      {notaAEliminar && (
+        <ModalConfirmacion
+          mensaje={`¿Estás seguro que deseas eliminar la nota "${notaAEliminar.titulo}"?`}
+          onConfirm={confirmarEliminacion}
+          onCancel={() => setNotaAEliminar(null)}
+        />
+      )}
+
       {/* Notas privadas */}
       {esAutenticado && notasPrivadas.length > 0 && (
         <div>
@@ -45,7 +79,7 @@ const NotasGrid = ({ notas, esAutenticado }) => {
               <NotaCard 
                 key={`privada-${nota.id}`} 
                 nota={nota}
-                onDelete={habndelDeleteNota(nota)}
+                onDelete={() => handleDeleteNota(nota)}
                 onEdit={() => setNotaEditando(nota)}
               />
             ))}
@@ -64,7 +98,7 @@ const NotasGrid = ({ notas, esAutenticado }) => {
               <NotaCard 
                 key={`publica-${nota.id}`}
                 nota={nota}
-                onDelete={habndelDeleteNota(nota)}
+                onDelete={() => handleDeleteNota(nota)}
                 onEdit={() => setNotaEditando(nota)}
               />
             ))}

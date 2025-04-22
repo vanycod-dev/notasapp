@@ -19,25 +19,29 @@ export const editarNotaPublica = (notaActualizada) => {
         nota.id === notaActualizada.id ? notaActualizada : nota
     );
     localStorage.setItem(NOTAS_PUBLICAS, JSON.stringify(nuevasNotas));
-    return notaActualizada;
+    return Promise.resolve(notaActualizada); // Simulando una promesa
 }
 
 export const eliminarNotaPublica = (id) => {
     const notasPublicas = obtenerNotasPublicas();
     const nuevasNotas = notasPublicas.filter(nota => nota.id !== id);
     localStorage.setItem(NOTAS_PUBLICAS, JSON.stringify(nuevasNotas));
-    return nuevasNotas;
+    return Promise.resolve(true); // Simulando una promesa
 }
 
 export const obtenerNotasPrivadas = async () => {
     try {
         const response = await api.get('/notes');
-        console.log('Respuesta completa del backend:', response);
-        console.log('Datos de notas privadas:', response.data?.data);
-        // Devuelve directamente response.data que ya contiene la estructura {success, message, data}
-        return response.data;
+        // Asegurarse de que la respuesta tenga la estructura correcta
+        if (response.data && Array.isArray(response.data.data)) {
+            return {
+                success: true,
+                data: response.data.data
+            };
+        }
+        throw new Error('Formato de respuesta inválido');
     } catch (error) {
         console.error('Error al obtener notas privadas:', error);
-        return { success: false, data: [] }; // Mantener misma estructura
+        return { success: false, data: [] };
     }
 }

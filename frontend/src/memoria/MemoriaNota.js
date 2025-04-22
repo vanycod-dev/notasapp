@@ -65,10 +65,10 @@ export const editarNota = (nota) => {
 
 export const eliminarNota = async (id, esPrivada) => {
     try {
-        if(esPrivada === true) {
+        if(esPrivada) {
             await eliminarNotaPrivada(id);
-        } else if(esPrivada === false) {
-            eliminarNotaPublica(id);
+        } else {
+            await eliminarNotaPublica(id);
         }
         return true;
     } catch (error) {
