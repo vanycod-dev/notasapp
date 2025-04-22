@@ -34,7 +34,7 @@ function Nota() {
             crearNota(nota);
             console.log('Nota pública creada desde front:', nota);
         }
-        navigate('/informacion');
+        navigate('/misnotas');
     }
 
     const aplicarEstilo = (style, value = null) => {
