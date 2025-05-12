@@ -20,13 +20,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response, // Si la respuesta es exitosa, devolverla
     (error) => {
-        if (error.response.status === 401) { // Si el error es 401 (no autorizado)
-            console.error('Token inválido o expirado'); // Mostrar un mensaje de error en la consola
-            localStorage.removeItem('token'); // Eliminar el token del almacenamiento local
-            window.location.href = '/login'; // Redirigir al usuario a la página de inicio de sesión
+        if (error.response.status === 401) {
+            console.error('Token inválido o expirado');
+            localStorage.removeItem('token'); // Eliminar el token del almacenamiento local si caduca
+            window.location.href = '/login';
         }
         return Promise.reject(error); // Rechazar la promesa con el error
     }
 );
 
-export default api; // Exportar la instancia de axios configurada para su uso en otros archivos
+export default api;

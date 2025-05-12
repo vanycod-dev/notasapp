@@ -21,7 +21,7 @@ function Registro() {
             [name]: value
         }));
         
-        // Validación en tiempo real (opcional)
+        // Validación en tiempo real (opcional o mejorar)
         if (errores[name]) {
             setErrores(prev => {
                 const newErrores = {...prev};
@@ -51,7 +51,7 @@ function Registro() {
             
             await registro(nuevoRegistro); // Espera a que la promesa se resuelva
             
-            // Reset después del éxito
+            // Reset después del éxito mmm mejorar
             setForm({ nombre: "", correo: "", contrasena: "", password2: "" });
             setErrores({});
             alert("Registro exitoso!");

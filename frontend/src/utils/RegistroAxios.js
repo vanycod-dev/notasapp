@@ -4,7 +4,7 @@ const registro = async (data) => {
     console.log('Datos recibidos:', data); // { usuario: "...", email: "...", password: "..." }
 
     try {
-        const response = await api.post('/users/register', data); // Envía el objeto directamente
+        const response = await api.post('/users/register', data);
         console.log('Respuesta del servidor:', response.data);
         return response.data;
     } catch (error) {

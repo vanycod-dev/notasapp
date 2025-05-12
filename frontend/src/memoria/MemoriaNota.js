@@ -25,7 +25,7 @@ export const crearNotaPrivada = async (nota) => {
         const response = await api.post('/notes', {
             title: nota.titulo,
             content: nota.contenido,
-            esPrivada: true // Aunque no se guarde en BD, lo enviamos por consistencia
+            esPrivada: true
         });
         return response.data;
     } catch (error) {

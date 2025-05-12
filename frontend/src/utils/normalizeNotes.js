@@ -1,4 +1,3 @@
-// src/utils/normalizeNotes.js
 export const normalizeNote = (note, isPrivate = false) => {
     return {
       id: note.id || note._id || Date.now().toString(),

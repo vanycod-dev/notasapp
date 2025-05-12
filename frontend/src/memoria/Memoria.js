@@ -32,7 +32,7 @@ export const eliminarNotaPublica = (id) => {
 export const obtenerNotasPrivadas = async () => {
     try {
         const response = await api.get('/notes');
-        // Asegurarse de que la respuesta tenga la estructura correcta
+        // Asegurarse de que la respuesta tenga la estructura correcta ayuda de deep
         if (response.data && Array.isArray(response.data.data)) {
             return {
                 success: true,
